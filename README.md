@@ -3,8 +3,6 @@
 
 TODOs:
 
-Use multicore for loading samples into ram
+Try running on Savio with other batch sizes
 
-Try L1Loss instead of MSELoss
-
-!wandb disabled
+Get MeshCNN from github and implement
