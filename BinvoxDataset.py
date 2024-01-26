@@ -3,7 +3,7 @@ import Binvox
 import pandas as pd
 import math
 from torch.utils.data import Dataset
-import multiprocessing
+import multiprocess as multiprocessing
 class CustomDataset(Dataset):
     def __init__(self, input_folder_path, label_file_path, transform = None, max_count = None, ram_limit = 1000):
         self.input_folder_path = input_folder_path
