@@ -24,18 +24,14 @@
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=20:00:00
+#SBATCH --time=00:10:00
 #
 ## Command(s) to run (example):
 module load python/3.8.8
-source activate /global/scratch/users/ethantqiu/envs/3d
+#pip install --user wandb
+module load cuda/10.2
 
+#source activate /global/scratch/users/sarashonkwiler/3d
+source activate /global/scratch/users/sarashonkwiler/3d
 
-
-
-
-
-
-
-
-
+python one_model_regression_once_data_loaded.py >& one_model_regression_once_data_loaded.out
