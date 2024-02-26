@@ -4,15 +4,17 @@ import pandas as pd
 import math
 from torch.utils.data import Dataset
 import multiprocess as multiprocessing
+import json
 class CustomDataset(Dataset):
-    def __init__(self, input_folder_path, label_file_path, transform = None, max_count = None, ram_limit = 1000):
+    def __init__(self, input_folder_path, label_file_path, transform = None, max_count = None, ram_limit = 1000, label_type = 'json'):
         self.input_folder_path = input_folder_path
         self.label_file_path = label_file_path
         self.transform = transform
         self.max_count = max_count if max_count else math.inf
         self.ram_limit = ram_limit
-        self.input_paths, self.input_names = self.load_input_paths_names()
+        self.label_type = label_type
         self.labels = self.load_labels()
+        self.input_paths, self.input_names = self.load_input_paths_names()
     
     def load_input_paths_names(self):
         count = 0
@@ -20,16 +22,21 @@ class CustomDataset(Dataset):
         list_of_file_names = []
         directory = os.fsencode(self.input_folder_path)
         for file in os.listdir(directory):
-            list_of_file_paths.append(self.input_folder_path + os.fsdecode(file))
-            list_of_file_names.append(os.fsdecode(file))
-            count += 1
+            if 'data/parts_0, files 1 through 3950/rotated_files/' + os.fsdecode(file).replace('binvox', 'stl') in self.labels.index:
+                list_of_file_paths.append(self.input_folder_path + os.fsdecode(file))
+                list_of_file_names.append(os.fsdecode(file))
+                count += 1
             if count >= self.max_count:
                 break
         return list_of_file_paths, list_of_file_names
     
     def load_labels(self):
-        csv = pd.read_csv(self.label_file_path, header = None)
-        return pd.Series(data = csv[1].values, index = csv[0].values, dtype = 'float32')
+        if self.label_type == 'csv':
+            csv = pd.read_csv(self.label_file_path, header = None)
+            return pd.Series(data = csv[1].values, index = csv[0].values, dtype = 'float32')
+        if self.label_type == 'json':
+            j = json.load(open(self.label_file_path))
+            return pd.Series(data = j)
     
     def __len__(self):
         return len(self.input_paths)
@@ -49,7 +56,10 @@ class CustomDataset(Dataset):
             sample = self.transform(sample)
         if idx % self.ram_limit == 0:
             print('Processing sample number', idx)
-        return sample, self.labels[self.input_names[idx].replace('binvox', 'stl')]
+        if self.label_type == 'csv':
+            return sample, self.labels[self.input_names[idx].replace('binvox', 'stl')]
+        if self.label_type == 'json':
+            return sample, self.labels['data/parts_0, files 1 through 3950/rotated_files/' + self.input_names[idx].replace('binvox', 'stl')]
     
     def load_sample_from_disk(self, file_name):
         return (file_name, Binvox.read_as_3d_array(open(self.input_folder_path + file_name, 'rb')).data)
