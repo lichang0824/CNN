@@ -22,10 +22,11 @@ class CustomDataset(Dataset):
         list_of_file_names = []
         directory = os.fsencode(self.input_folder_path)
         for file in os.listdir(directory):
-            if 'data/parts_0, files 1 through 3950/rotated_files/' + os.fsdecode(file).replace('binvox', 'stl') in self.labels.index:
-                list_of_file_paths.append(self.input_folder_path + os.fsdecode(file))
-                list_of_file_names.append(os.fsdecode(file))
-                count += 1
+            if (self.label_type == 'json') and ('data/parts_0, files 1 through 3950/rotated_files/' + os.fsdecode(file).replace('binvox', 'stl') not in self.labels.index):
+                continue
+            list_of_file_paths.append(self.input_folder_path + os.fsdecode(file))
+            list_of_file_names.append(os.fsdecode(file))
+            count += 1
             if count >= self.max_count:
                 break
         return list_of_file_paths, list_of_file_names
