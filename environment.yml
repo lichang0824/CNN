@@ -7,3 +7,6 @@ dependencies:
   - pytorch
   - numpy
   - scikit-learn
+  - pip
+  - pip:
+    - PrettyTable
