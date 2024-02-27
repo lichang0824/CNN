@@ -10,7 +10,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from IPython.display import clear_output
 from sklearn.metrics import r2_score
 from Savio_Dataset import CustomDataset
 from Networks import ConvNetScalarLabel, count_parameters
