@@ -3,10 +3,10 @@
 
 TODOs:
 
+Separate out CNN definition to new python script file
+
 Try running on Savio with other batch sizes
 
-Data is already in scratch folder under /global/scratch/users/ethanqiu/data
-
-Try 64^3 instead of 256^3 to save time
+Try using 64^3 resolution to simplify network
 
 Get MeshCNN from github and implement
