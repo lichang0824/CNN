@@ -1,0 +1,11 @@
+name: 3dcnn
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - python
+  - pytorch
+  - numpy
+  - json
+  - os
+  - sklearn
