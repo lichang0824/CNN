@@ -6,6 +6,4 @@ dependencies:
   - python
   - pytorch
   - numpy
-  - json
-  - os
-  - sklearn
+  - scikit-learn
