@@ -6,6 +6,7 @@ dependencies:
   - python
   - pytorch
   - numpy
+  - pandas
   - scikit-learn
   - pip
   - pip:
