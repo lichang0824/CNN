@@ -36,7 +36,7 @@ class CustomDataset(Dataset):
         return self.labels.size
     
     def __getitem__(self, idx):
-        sample_path = os.path.join(self.data_path, self.labels.index[idx])
+        sample_path = os.path.join(self.data_path, self.labels.index[idx].replace('.stl', '.binvox'))
         sample = Binvox.read_as_3d_array(open(sample_path, 'rb')).data
         if self.transform:
             sample = self.transform(sample)
