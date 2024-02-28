@@ -99,8 +99,6 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 
 
 def train(config, loss_fn):
-    clear_output(wait = True)
-    
     # initialize a wandb run
     wandb.init(config = config, project = 'PAPER', name = '3D CNN Testing')
 
