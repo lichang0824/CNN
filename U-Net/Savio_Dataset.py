@@ -41,6 +41,8 @@ class CustomDataset(Dataset):
         sample = Binvox.read_as_3d_array(open(sample_path, 'rb')).data
         if self.transform:
             sample = self.transform(sample)
+        if idx % 1000 == 0:
+            print('Processing sample number', idx)
         return sample, self.labels.iloc[idx]
         # debug
         # print(self.input_names[idx].replace('binvox', 'stl'))

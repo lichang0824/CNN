@@ -100,7 +100,7 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 
 def train(config, loss_fn):
     # initialize a wandb run
-    wandb.init(config = config, project = 'PAPER', name = '3D CNN Testing')
+    wandb.init(config = config, name = '3D CNN Testing')
 
     # copy the config
     config = wandb.config
@@ -159,7 +159,7 @@ def test(config, model, loss_fn):
 
 
 def evaluate(config = None):
-    loss_fn = nn.L1Loss()
+    loss_fn = nn.MSELoss()
     model = train(config, loss_fn)
     avg_loss_per_batch_test, testing_loss, r2 = test(config, model, loss_fn)
     wandb.log({'avg_loss_per_batch_test': avg_loss_per_batch_test, 'testing_loss': testing_loss, 'r2': r2})
@@ -204,7 +204,7 @@ parameters_dict = {
         'values': ['ReLU']
     },
     'epochs_choice': {
-          'values': [20]
+          'values': [5]
     },
     'learning_rate': {
         'values': [1e-4]
@@ -222,7 +222,7 @@ sweep_config['parameters'] = parameters_dict
 # In[ ]:
 
 
-sweep_id = wandb.sweep(sweep_config, project = 'CNN_sweep_scalar')
+sweep_id = wandb.sweep(sweep_config, project = 'PAPER')
 
 
 # In[ ]:
