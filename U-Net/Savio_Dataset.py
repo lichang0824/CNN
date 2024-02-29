@@ -30,7 +30,7 @@ class CustomDataset(Dataset):
     
     def load_labels(self):
         j = json.load(open(os.path.join(self.data_path, self.label_file_path)))
-        return pd.Series(data = j)
+        return pd.Series(data = j) / 100
     
     def __len__(self):
         return self.labels.size

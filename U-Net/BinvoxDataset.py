@@ -38,7 +38,7 @@ class CustomDataset(Dataset):
             return pd.Series(data = csv[1].values, index = csv[0].values, dtype = 'float32')
         if self.label_type == 'json':
             j = json.load(open(self.label_file_path))
-            return pd.Series(data = j)
+            return pd.Series(data = j) / 100
     
     def __len__(self):
         return len(self.input_paths)
