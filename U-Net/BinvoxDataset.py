@@ -6,8 +6,9 @@ from torch.utils.data import Dataset
 import multiprocess as multiprocessing
 import json
 class CustomDataset(Dataset):
-    def __init__(self, input_folder_path, label_file_path, transform = None, max_count = None, ram_limit = 1000, label_type = 'json'):
+    def __init__(self, input_folder_path, input_folder_name, label_file_path, transform = None, max_count = None, ram_limit = 1000, label_type = 'json'):
         self.input_folder_path = input_folder_path
+        self.input_folder_name = input_folder_name
         self.label_file_path = label_file_path
         self.transform = transform
         self.max_count = max_count if max_count else math.inf
@@ -22,7 +23,7 @@ class CustomDataset(Dataset):
         list_of_file_names = []
         directory = os.fsencode(self.input_folder_path)
         for file in os.listdir(directory):
-            if (self.label_type == 'json') and ('data/parts_0, files 1 through 3950/rotated_files/' + os.fsdecode(file).replace('binvox', 'stl') not in self.labels.index):
+            if (self.label_type == 'json') and ('data/' + self.input_folder_name + '/rotated_files/' + os.fsdecode(file).replace('binvox', 'stl') not in self.labels.index):
                 continue
             list_of_file_paths.append(self.input_folder_path + os.fsdecode(file))
             list_of_file_names.append(os.fsdecode(file))
@@ -60,7 +61,7 @@ class CustomDataset(Dataset):
         if self.label_type == 'csv':
             return sample, self.labels[self.input_names[idx].replace('binvox', 'stl')]
         if self.label_type == 'json':
-            return sample, self.labels['data/parts_0, files 1 through 3950/rotated_files/' + self.input_names[idx].replace('binvox', 'stl')]
+            return sample, float(self.labels['data/' + self.input_folder_name + '/rotated_files/' + self.input_names[idx].replace('binvox', 'stl')])
     
     def load_sample_from_disk(self, file_name):
         return (file_name, Binvox.read_as_3d_array(open(self.input_folder_path + file_name, 'rb')).data)
