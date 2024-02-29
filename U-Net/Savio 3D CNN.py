@@ -13,6 +13,8 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score
 from Savio_Dataset import CustomDataset
 from Networks import ConvNetScalarLabel, count_parameters
+import pickle
+import argparse
 
 
 # In[ ]:
@@ -170,6 +172,15 @@ def evaluate(config = None):
 # In[ ]:
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--file', type = str, required = True)
+args = parser.parse_args()
+hyperparameter_filename = args.file
+
+
+# In[ ]:
+
+
 sweep_config = {
     'method': 'grid'
     }
@@ -178,41 +189,9 @@ metric = {
     'goal': 'minimize'
     }
 sweep_config['metric'] = metric
-parameters_dict = {
-    'kernel_size': {
-        'values': [3, 4, 5]
-    },
-    'activation_fn': {
-        'values': ['ReLU', 'Sigmoid']
-    },
-    'epochs_choice': {
-          'values': [5, 10, 20]
-    },
-    'learning_rate': {
-        'values': [1e-4, 1e-3, 1e-2]
-    },
-    'batch_size': {
-        'values': [4]
-    },
-}
 
-parameters_dict = {
-    'kernel_size': {
-        'values': [3]
-    },
-    'activation_fn': {
-        'values': ['ReLU']
-    },
-    'epochs_choice': {
-          'values': [5]
-    },
-    'learning_rate': {
-        'values': [1e-4]
-    },
-    'batch_size': {
-        'values': [4]
-    },
-}
+with open(hyperparameter_filename, 'rb') as f:
+    parameters_dict = pickle.load(f)
 
 sweep_config['parameters'] = parameters_dict
 
