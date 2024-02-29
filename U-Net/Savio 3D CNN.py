@@ -85,7 +85,7 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 
         # Compute loss and its gradients
         # print('label shape', labels.shape)
-        loss = loss_fn(outputs, labels)
+        loss = loss_fn(outputs, labels.float())
         loss.backward()
 
         # Adjust learning weights
@@ -149,7 +149,7 @@ def test(config, model, loss_fn):
         inputs = inputs.to(device)
         labels = labels.to(device)
         outputs = model(inputs)
-        loss = loss_fn(outputs, labels)
+        loss = loss_fn(outputs, labels.float())
         testing_loss += loss.item()
 
         y_true.extend(labels.cpu().numpy().tolist())
