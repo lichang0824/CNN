@@ -31,6 +31,14 @@ import wandb
 wandb.login()
 
 
+# # Calculate number of parameters
+
+# In[ ]:
+
+
+count_parameters(ConvNetScalarLabel())
+
+
 # # Create dataset
 
 # In[ ]:
