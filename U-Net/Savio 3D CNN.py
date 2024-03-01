@@ -15,6 +15,7 @@ from Savio_Dataset import CustomDataset
 from Networks import ConvNetScalarLabel, count_parameters
 import pickle
 import argparse
+import time
 
 
 # In[ ]:
@@ -128,13 +129,16 @@ def train(config, loss_fn):
         activation_fn = nn.Sigmoid()
     
     model = ConvNetScalarLabel(kernel_size = config.kernel_size, activation_fn = activation_fn).to(device)
+    print(count_parameters(model))
     
     optimizer = torch.optim.SGD(model.parameters(), lr = config.learning_rate, momentum = 0.9)
 
     for epoch in range(config.epochs_choice):
+        tic = time.time()
         avg_loss_per_batch, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
-        wandb.log({'avg_loss_per_batch': avg_loss_per_batch, 'cumulative_loss': cumulative_loss})
-        print(f'Loss for epoch {epoch}: {cumulative_loss}')
+        toc = time.time()
+        wandb.log({'avg_loss_per_batch': avg_loss_per_batch, 'cumulative_loss': cumulative_loss, 'time': toc - tic})
+        print(f'Loss for epoch {epoch}: {cumulative_loss}, time for epoch {epoch}: {toc - tic}')
     
     return model
 
