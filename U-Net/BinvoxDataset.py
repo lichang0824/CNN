@@ -1,10 +1,10 @@
 import os
-import Binvox
 import pandas as pd
 import math
 from torch.utils.data import Dataset
 import multiprocess as multiprocessing
 import json
+from worker import load_sample_from_disk
 class CustomDataset(Dataset):
     def __init__(self, input_folder_path, input_folder_name, label_file_path, transform = None, max_count = None, ram_limit = 1000, label_type = 'json'):
         self.input_folder_path = input_folder_path
@@ -49,7 +49,7 @@ class CustomDataset(Dataset):
             self.samples_in_ram = None
             # need to load new samples into ram
             self.samples_in_ram = self.load_sample_into_ram(idx)
-        sample = self.load_sample_from_ram(self.input_names[idx])
+        sample = self.load_sample_from_ram(self.input_paths[idx])
         
         # debug
         # print(self.input_names[idx].replace('binvox', 'stl'))
@@ -62,32 +62,31 @@ class CustomDataset(Dataset):
             return sample, self.labels[self.input_names[idx].replace('binvox', 'stl')]
         if self.label_type == 'json':
             return sample, float(self.labels['data/' + self.input_folder_name + '/rotated_files/' + self.input_names[idx].replace('binvox', 'stl')])
-    
-    def load_sample_from_disk(self, file_name):
-        return (file_name, Binvox.read_as_3d_array(open(self.input_folder_path + file_name, 'rb')).data)
 
     def load_sample_into_ram(self, idx):
         num_cores = multiprocessing.cpu_count()
         samples_in_ram = {}
         # need to load ram_limit # of samples, starting from idx
         print('Loading samples', idx, 'through', min(idx + self.ram_limit, self.__len__()) - 1)
-        sample_names_to_load = self.input_names[idx : min(idx + self.ram_limit, self.__len__())]
 
-        pool = multiprocessing.Pool(processes = num_cores)
-        tuples = pool.map(self.load_sample_from_disk, sample_names_to_load)
-        '''
-        results = [pool.apply_async(self.load_sample_from_disk, args = (sample_name,)) for sample_name in sample_names_to_load]
-        tuples = [result.get() for result in results]
-        '''
-        pool.close()
-        pool.join()
+        # Single core
         '''
         for file_name in self.input_names[idx : min(idx + self.ram_limit, self.__len__())]:
             samples_in_ram[file_name] = self.load_sample_from_disk(file_name)
+        return samples_in_ram
         '''
+        
+        # Multi core
+        
+        sample_paths_to_load = self.input_paths[idx : min(idx + self.ram_limit, self.__len__())]
+        pool = multiprocessing.Pool(processes = num_cores)
+        tuples = pool.map(load_sample_from_disk, sample_paths_to_load)
+        pool.close()
+        pool.join()
+
         for sample in tuples:
             samples_in_ram[sample[0]] = sample[1]
         return samples_in_ram
 
-    def load_sample_from_ram(self, file_name):
-        return self.samples_in_ram[file_name]
+    def load_sample_from_ram(self, file_path):
+        return self.samples_in_ram[file_path]
