@@ -11,10 +11,9 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score
-from BinvoxDataset import CustomDataset
+from Savio_Dataset import CustomDataset
 from Networks import ConvNetScalarLabel, count_parameters
 import time
-import pickle
 import argparse
 
 
@@ -117,7 +116,7 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 
 def train(config, loss_fn):
     # initialize a wandb run
-    wandb.init(config = config)
+    wandb.init(config = config, name = '3D CNN Testing')
 
     # copy the config
     config = wandb.config
@@ -238,7 +237,7 @@ sweep_config['parameters'] = parameters_dict
 # In[ ]:
 
 
-sweep_id = wandb.sweep(sweep_config, project = 'CNN_sweep_scalar')
+sweep_id = wandb.sweep(sweep_config, project = 'PAPER')
 
 
 # In[ ]:
