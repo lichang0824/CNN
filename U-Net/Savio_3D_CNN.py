@@ -193,6 +193,7 @@ def evaluate(config = None):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--file', type = str, required = True)
+parser.add_argument('--set', type = int, required = True)
 args = parser.parse_args()
 hyperparameter_filename = args.file
 
@@ -210,7 +211,7 @@ metric = {
 sweep_config['metric'] = metric
 
 with open(hyperparameter_filename, 'rb') as f:
-    parameters_dict = pickle.load(f)
+    parameters_dict_list = pickle.load(f)[args.set]
 
 sweep_config['parameters'] = parameters_dict
 
