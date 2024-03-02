@@ -24,7 +24,7 @@
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=3-00:00:00
+#SBATCH --time=72:00:00
 #
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
