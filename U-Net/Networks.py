@@ -139,7 +139,7 @@ class ConvNetScalarLabel(nn.Module):
 
     def create_conv_set(self, in_channels, out_channels, kernel_size, activation_fn):
         return nn.Sequential(
-            nn.Conv3d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = 'same'),
+            nn.Conv3d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = 'same', bias = False),
             nn.BatchNorm3d(num_features = out_channels),
             activation_fn
         )
