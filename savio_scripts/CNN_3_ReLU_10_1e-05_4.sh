@@ -24,10 +24,10 @@
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=10:00:00
+#SBATCH --time=100:00:00
 #
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
 module load python
 source activate /global/home/users/changli824/.conda/envs/3dcnn
-python3 ./U-Net/Savio_3D_CNN.py --kernel_size 3 --activation_fn ReLU --epochs_choice 10 --learning_rate 1e-05 --batch_size 4
+./U-Net/Savio_3D_CNN.py --kernel_size 3 --activation_fn ReLU --epochs_choice 10 --learning_rate 1e-05 --batch_size 4

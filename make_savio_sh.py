@@ -26,7 +26,7 @@ PREFACE = """#!/bin/bash
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=10:00:00
+#SBATCH --time=100:00:00
 #
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
@@ -49,8 +49,8 @@ for data in [10000]:
                                 )
 '''
 
-for kernel_size in [5, 3]:
-    for activation_fn in ['ReLU']:
+for kernel_size in [3]:
+    for activation_fn in ['ReLU', 'Sigmoid']:
         for epochs_choice in [5, 10, 15]:
             for learning_rate in [1e-4, 1e-5]:
                 for batch_size in [4]:
