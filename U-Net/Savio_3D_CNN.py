@@ -192,10 +192,12 @@ def evaluate(config = None):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--file', type = str, required = True)
-parser.add_argument('--set', type = int, required = True)
+parser.add_argument('--kernel_size', type = int, required = True)
+parser.add_argument('--activation_fn', type = str, required = True)
+parser.add_argument('--epochs_choice', type = int, required = True)
+parser.add_argument('--learning_rate', type = float, required = True)
+parser.add_argument('--batch_size', type = int, required = True)
 args = parser.parse_args()
-hyperparameter_filename = args.file
 
 
 # In[ ]:
@@ -210,8 +212,23 @@ metric = {
     }
 sweep_config['metric'] = metric
 
-with open(hyperparameter_filename, 'rb') as f:
-    parameters_dict_list = pickle.load(f)[args.set]
+parameters_dict = {
+    'kernel_size': {
+        'values': [args.kernel_size]
+    },
+    'activation_fn': {
+        'values': [args.activation_fn]
+    },
+    'epochs_choice': {
+          'values': [args.epochs_choice]
+    },
+    'learning_rate': {
+        'values': [args.learning_rate]
+    },
+    'batch_size': {
+        'values': [args.batch_size]
+    },
+}
 
 sweep_config['parameters'] = parameters_dict
 
