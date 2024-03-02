@@ -1,1 +1,1 @@
-jupyter nbconvert --to script Savio\ 3D\ CNN.ipynb
+jupyter nbconvert --to script Savio_3D_CNN.ipynb

@@ -30,4 +30,4 @@
 cd /global/home/users/changli824/CNN/U-Net
 module load python
 source activate /global/home/users/changli824/.conda/envs/3dcnn
-python3 Savio\ 3D\ CNN.py --file hyper.pkl
+python3 Savio_3D_CNN.py --file hyper.pkl

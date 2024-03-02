@@ -11,11 +11,11 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score
-from Savio_Dataset import CustomDataset
+from BinvoxDataset import CustomDataset
 from Networks import ConvNetScalarLabel, count_parameters
+import time
 import pickle
 import argparse
-import time
 
 
 # In[ ]:
@@ -73,6 +73,12 @@ dataset_val = CustomDataset(data_path = data_path, label_file_path = val_parts, 
 len(dataset)
 
 
+# In[ ]:
+
+
+len(dataset_val)
+
+
 # # Define Training Logic
 
 # In[ ]:
@@ -111,7 +117,7 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 
 def train(config, loss_fn):
     # initialize a wandb run
-    wandb.init(config = config, name = '3D CNN Testing')
+    wandb.init(config = config)
 
     # copy the config
     config = wandb.config
@@ -137,8 +143,8 @@ def train(config, loss_fn):
         tic = time.time()
         avg_loss_per_batch, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
         toc = time.time()
-        wandb.log({'avg_loss_per_batch': avg_loss_per_batch, 'cumulative_loss': cumulative_loss, 'time': toc - tic})
-        print(f'Loss for epoch {epoch}: {cumulative_loss}, time for epoch {epoch}: {toc - tic}')
+        wandb.log({'avg_loss_per_batch': avg_loss_per_batch, 'cumulative_loss': cumulative_loss, 'time': round(toc - tic)})
+        print(f'Loss for epoch {epoch}: {cumulative_loss}, time for epoch {epoch}: {round(toc - tic)}')
     
     return model
 
@@ -175,6 +181,7 @@ def test(config, model, loss_fn):
 def evaluate(config = None):
     loss_fn = nn.MSELoss()
     model = train(config, loss_fn)
+    torch.save(model, 'model.pt')
     avg_loss_per_batch_test, testing_loss, r2 = test(config, model, loss_fn)
     wandb.log({'avg_loss_per_batch_test': avg_loss_per_batch_test, 'testing_loss': testing_loss, 'r2': r2})
 
@@ -213,17 +220,11 @@ sweep_config['parameters'] = parameters_dict
 # In[ ]:
 
 
-sweep_id = wandb.sweep(sweep_config, project = 'PAPER')
+sweep_id = wandb.sweep(sweep_config, project = 'CNN_sweep_scalar')
 
 
 # In[ ]:
 
 
 wandb.agent(sweep_id = sweep_id, function = evaluate)
-
-
-# In[ ]:
-
-
-
 
