@@ -29,5 +29,5 @@
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
 module load python
-source activate /global/home/users/changli824/.conda/envs/3dcnn
+source activate /global/scratch/users/changli824/conda/envs/3dcnn
 python3 ./U-Net/test_gpu.py
