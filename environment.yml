@@ -7,7 +7,7 @@ channels:
 dependencies:
   - python::pytorch
   - pytorch
-  - nvidia::cudatoolkit=11.1
+  - nvidia::cudatoolkit
   - numpy
   - pandas
   - scikit-learn
