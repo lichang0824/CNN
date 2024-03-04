@@ -25,7 +25,7 @@ class CustomDataset(Dataset):
         # need to load ram_limit # of samples, starting from idx
         print('Loading samples', idx)
         labels_to_load = self.labels[idx : min(idx + self.ram_limit, self.__len__())].index.to_list()
-        paths_to_load = [os.join(self.data_path, label) for label in labels_to_load]
+        paths_to_load = [os.path.join(self.data_path, label) for label in labels_to_load]
         pool = multiprocessing.Pool(processes = num_cores)
         tuples = pool.map(load_sample_from_savio, paths_to_load)
         pool.close()
@@ -43,7 +43,7 @@ class CustomDataset(Dataset):
             self.samples_in_ram = None
             # need to load new samples into ram
             self.samples_in_ram = self.load_sample_into_ram(idx)
-        sample = self.load_sample_from_ram(os.join(self.data_path, self.labels.index[idx]))
+        sample = self.load_sample_from_ram(os.path.join(self.data_path, self.labels.index[idx]))
         if self.transform:
             sample = self.transform(sample)
         if idx % 1000 == 0:
