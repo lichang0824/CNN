@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job name:
-#SBATCH --job-name=CNN_3_ReLU_5_0.0001_4
+#SBATCH --job-name=CNN_3_Sigmoid_5_1e-05_4
 #
 # Account:
 #SBATCH --account=fc_caddatabase
@@ -30,4 +30,4 @@
 cd /global/home/users/changli824/CNN
 module load python
 source activate /global/scratch/users/changli824/conda/envs/3dcnn
-./U-Net/Savio_3D_CNN.py --kernel_size 3 --activation_fn ReLU --epochs_choice 5 --learning_rate 0.0001 --batch_size 4
+./U-Net/Savio_3D_CNN.py --kernel_size 3 --activation_fn Sigmoid --epochs_choice 5 --learning_rate 1e-05 --batch_size 4
