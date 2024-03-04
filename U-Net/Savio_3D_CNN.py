@@ -178,11 +178,11 @@ def test(config, model, loss_fn):
 
 
 def evaluate(config = None):
-    loss_fn = nn.MSELoss()
+    loss_fn = nn.L1Loss()
     model = train(config, loss_fn)
     torch.save(model, 'model.pt')
-    avg_loss_per_batch_test, testing_loss, r2 = test(config, model, loss_fn)
-    wandb.log({'avg_loss_per_batch_test': avg_loss_per_batch_test, 'testing_loss': testing_loss, 'r2': r2})
+    avg_loss, testing_loss, r2 = test(config, model, loss_fn)
+    wandb.log({'avg_loss': avg_loss, 'testing_loss': testing_loss, 'r2': r2})
 
 
 # # Training settings
