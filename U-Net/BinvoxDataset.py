@@ -56,8 +56,8 @@ class CustomDataset(Dataset):
         
         if self.transform:
             sample = self.transform(sample)
-        if idx % self.ram_limit == 0:
-            print('Processing sample number', idx)
+        if idx % (5 * self.ram_limit) == 0:
+            print('Processing sample', idx)
         if self.label_type == 'csv':
             return sample, self.labels[self.input_names[idx].replace('binvox', 'stl')]
         if self.label_type == 'json':
@@ -67,7 +67,7 @@ class CustomDataset(Dataset):
         num_cores = multiprocessing.cpu_count()
         samples_in_ram = {}
         # need to load ram_limit # of samples, starting from idx
-        print('Loading samples', idx, 'through', min(idx + self.ram_limit, self.__len__()) - 1)
+        # print('Loading samples', idx)
 
         # Single core
         '''
