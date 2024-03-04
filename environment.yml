@@ -5,8 +5,8 @@ channels:
   - pytorch
   - defaults
 dependencies:
-  - python::pytorch
-  - pytorch
+  - python
+  - pytorch::pytorch
   - nvidia::cudatoolkit
   - numpy
   - pandas
