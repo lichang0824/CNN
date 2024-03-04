@@ -29,5 +29,5 @@
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
 module load python
-source activate /global/home/users/changli824/.conda/envs/3dcnn
+source activate /global/scratch/users/changli824/conda/envs/3dcnn
 ./U-Net/Savio_3D_CNN.py --kernel_size 3 --activation_fn ReLU --epochs_choice 5 --learning_rate 0.0001 --batch_size 4
