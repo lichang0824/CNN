@@ -178,7 +178,7 @@ def validate(config, model, loss_fn):
 
 
 def evaluate(config = None):
-    loss_fn = nn.L1Loss()
+    loss_fn = nn.L1Loss(reduction = 'sum')
     model = train(config, loss_fn)
     torch.save(model, 'model.pt')
     validation_loss, r2 = validate(config, model, loss_fn)
