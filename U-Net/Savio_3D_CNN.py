@@ -116,8 +116,7 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 
 
 def train(args, loss_fn):
-    print(f'3DCNN_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}')
-
+    
     # get training loader
     training_loader = DataLoader(dataset, batch_size = args.batch_size, shuffle = False)
 
@@ -171,8 +170,20 @@ def validate(args, model, loss_fn):
 
 
 def evaluate(args = None):
+    training_set = train_parts[5:-5]
+    name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
+    print(name)
     # initialize a wandb run
-    wandb.init(name = f'3DCNN_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}', project = 'PAPER')
+    wandb.init(name = name, project = 'PAPER')
+
+    # logging training settings
+    wandb.config.kernel_size = args.kernel_size
+    wandb.config.activation_fn = args.activation_fn
+    wandb.config.epochs_choice = args.epochs_choice
+    wandb.config.learning_rate = args.learning_rate
+    wandb.config.batch_size = args.batch_size
+    # filename of the training set, '10000' in 'data/10000.json' for example
+    wandb.config.training_set = training_set
     
     loss_fn = nn.L1Loss(reduction = 'mean')
     model = train(args, loss_fn)
