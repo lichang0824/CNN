@@ -201,4 +201,5 @@ args = parser.parse_args()
 
 
 evaluate(args = args)
+wandb.finish()
 
