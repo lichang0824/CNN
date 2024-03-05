@@ -173,17 +173,18 @@ def evaluate(args = None):
     training_set = train_parts[5:-5]
     name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
     print(name)
-    # initialize a wandb run
-    wandb.init(name = name, project = 'PAPER')
 
-    # logging training settings
-    wandb.config.kernel_size = args.kernel_size
-    wandb.config.activation_fn = args.activation_fn
-    wandb.config.epochs_choice = args.epochs_choice
-    wandb.config.learning_rate = args.learning_rate
-    wandb.config.batch_size = args.batch_size
-    # filename of the training set, '10000' in 'data/10000.json' for example
-    wandb.config.training_set = training_set
+    config = {
+        # filename of the training set, '10000' in 'data/10000.json' for example
+        'training_set': training_set,
+        'kernel_size': args.kernel_size,
+        'activation_fn': args.activation_fn,
+        'epochs_choice': args.epochs_choice,
+        'learning_rate': args.learning_rate,
+        'batch_size': args.batch_size
+    }
+    # initialize a wandb run
+    wandb.init(name = name, project = 'PAPER', config = config)
     
     loss_fn = nn.L1Loss(reduction = 'mean')
     model = train(args, loss_fn)
