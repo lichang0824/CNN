@@ -140,10 +140,10 @@ def train(config, loss_fn):
 
     for epoch in range(config.epochs_choice):
         tic = time.time()
-        avg_loss_per_batch, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
+        train_loss, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
         toc = time.time()
-        wandb.log({'avg_loss_per_batch': avg_loss_per_batch, 'cumulative_loss': cumulative_loss, 'time': round(toc - tic)})
-        print(f'Loss for epoch {epoch}: {cumulative_loss}, time for epoch {epoch}: {round(toc - tic)}')
+        wandb.log({'train_loss': train_loss, 'cumulative_loss': cumulative_loss, 'time': round(toc - tic)})
+        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss}, time for epoch {epoch}: {round(toc - tic)}')
     
     return model
 
@@ -151,27 +151,27 @@ def train(config, loss_fn):
 # In[ ]:
 
 
-def test(config, model, loss_fn):
+def validate(config, model, loss_fn):
     # copy the config
     config = wandb.config
     
-    # get testing loader
-    testing_loader = DataLoader(dataset_val, batch_size = config.batch_size, shuffle = False)
+    # get validation loader
+    validation_loader = DataLoader(dataset_val, batch_size = config.batch_size, shuffle = False)
     
-    testing_loss = 0.0
+    validation_loss = 0.0
     y_true = []
     y_pred = []
-    for i, data in enumerate(testing_loader):
+    for i, data in enumerate(validation_loader):
         inputs, labels = data
         inputs = inputs.to(device)
         labels = labels.to(device)
         outputs = model(inputs)
         loss = loss_fn(outputs, labels.float())
-        testing_loss += loss.item()
+        validation_loss += loss.item()
 
         y_true.extend(labels.cpu().numpy().tolist())
         y_pred.extend(outputs.cpu().detach().numpy().tolist())
-    return testing_loss / len(testing_loader), testing_loss, r2_score(y_true = y_true, y_pred = y_pred)
+    return validation_loss / len(validation_loader), r2_score(y_true = y_true, y_pred = y_pred)
 
 
 # In[ ]:
@@ -181,8 +181,8 @@ def evaluate(config = None):
     loss_fn = nn.L1Loss()
     model = train(config, loss_fn)
     torch.save(model, 'model.pt')
-    avg_loss, testing_loss, r2 = test(config, model, loss_fn)
-    wandb.log({'avg_loss': avg_loss, 'testing_loss': testing_loss, 'r2': r2})
+    validation_loss, r2 = validate(config, model, loss_fn)
+    wandb.log({'validation_loss': validation_loss, 'r2': r2})
 
 
 # # Training settings
@@ -206,7 +206,7 @@ sweep_config = {
     'method': 'grid'
     }
 metric = {
-    'name': 'testing_loss',
+    'name': 'validation_loss',
     'goal': 'minimize'
     }
 sweep_config['metric'] = metric
