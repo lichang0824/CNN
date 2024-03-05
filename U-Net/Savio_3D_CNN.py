@@ -115,36 +115,30 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
 # In[ ]:
 
 
-def train(config, loss_fn):
-    # initialize a wandb run
-    wandb.init(config = config, name = '3D CNN Testing')
-
-    # copy the config
-    config = wandb.config
-    
-    print('config:', config)
+def train(args, loss_fn):
+    print(f'3DCNN_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}')
 
     # get training loader
-    training_loader = DataLoader(dataset, batch_size = config.batch_size, shuffle = False)
+    training_loader = DataLoader(dataset, batch_size = args.batch_size, shuffle = False)
 
     # initialize model
-    if config.activation_fn == 'ReLU':
+    if args.activation_fn == 'ReLU':
         activation_fn = nn.ReLU()
     
-    if config.activation_fn == 'Sigmoid':
+    if args.activation_fn == 'Sigmoid':
         activation_fn = nn.Sigmoid()
     
-    model = ConvNetScalarLabel(kernel_size = config.kernel_size, activation_fn = activation_fn).to(device)
+    model = ConvNetScalarLabel(kernel_size = args.kernel_size, activation_fn = activation_fn).to(device)
     print(count_parameters(model))
     
-    optimizer = torch.optim.SGD(model.parameters(), lr = config.learning_rate, momentum = 0.9)
+    optimizer = torch.optim.SGD(model.parameters(), lr = args.learning_rate, momentum = 0.9)
 
-    for epoch in range(config.epochs_choice):
+    for epoch in range(args.epochs_choice):
         tic = time.time()
         train_loss, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
         toc = time.time()
-        wandb.log({'train_loss': train_loss, 'cumulative_loss': cumulative_loss * config.batch_size, 'time': round(toc - tic)})
-        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss * config.batch_size}, time for epoch {epoch}: {round(toc - tic)}')
+        wandb.log({'train_loss': train_loss, 'cumulative_loss': cumulative_loss * args.batch_size, 'time': round(toc - tic)})
+        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss * args.batch_size}, time for epoch {epoch}: {round(toc - tic)}')
     
     return model
 
@@ -152,12 +146,10 @@ def train(config, loss_fn):
 # In[ ]:
 
 
-def validate(config, model, loss_fn):
-    # copy the config
-    config = wandb.config
+def validate(args, model, loss_fn):
     
     # get validation loader
-    validation_loader = DataLoader(dataset_val, batch_size = config.batch_size, shuffle = False)
+    validation_loader = DataLoader(dataset_val, batch_size = args.batch_size, shuffle = False)
     
     validation_loss = 0.0
     y_true = []
@@ -178,11 +170,14 @@ def validate(config, model, loss_fn):
 # In[ ]:
 
 
-def evaluate(config = None):
+def evaluate(args = None):
+    # initialize a wandb run
+    wandb.init(name = f'3DCNN_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}', project = 'PAPER')
+    
     loss_fn = nn.L1Loss(reduction = 'mean')
-    model = train(config, loss_fn)
+    model = train(args, loss_fn)
     torch.save(model, 'model.pt')
-    validation_loss, r2 = validate(config, model, loss_fn)
+    validation_loss, r2 = validate(args, model, loss_fn)
     wandb.log({'validation_loss': validation_loss, 'r2': r2})
 
 
@@ -200,49 +195,10 @@ parser.add_argument('--batch_size', type = int, required = True)
 args = parser.parse_args()
 
 
-# In[ ]:
-
-
-sweep_config = {
-    'method': 'grid'
-    }
-metric = {
-    'name': 'validation_loss',
-    'goal': 'minimize'
-    }
-sweep_config['metric'] = metric
-
-parameters_dict = {
-    'kernel_size': {
-        'values': [args.kernel_size]
-    },
-    'activation_fn': {
-        'values': [args.activation_fn]
-    },
-    'epochs_choice': {
-          'values': [args.epochs_choice]
-    },
-    'learning_rate': {
-        'values': [args.learning_rate]
-    },
-    'batch_size': {
-        'values': [args.batch_size]
-    },
-}
-
-sweep_config['parameters'] = parameters_dict
-
-
 # # Start
 
 # In[ ]:
 
 
-sweep_id = wandb.sweep(sweep_config, project = 'PAPER')
-
-
-# In[ ]:
-
-
-wandb.agent(sweep_id = sweep_id, function = evaluate)
+evaluate(args = args)
 
