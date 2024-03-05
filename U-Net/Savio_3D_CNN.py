@@ -105,6 +105,7 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
         # Adjust learning weights
         optimizer.step()
 
+        # Increment by the mean loss of the batch
         cumulative_loss += loss.item()
         
         wandb.log({'batch loss': loss.item()})
@@ -142,8 +143,8 @@ def train(config, loss_fn):
         tic = time.time()
         train_loss, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
         toc = time.time()
-        wandb.log({'train_loss': train_loss, 'cumulative_loss': cumulative_loss, 'time': round(toc - tic)})
-        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss}, time for epoch {epoch}: {round(toc - tic)}')
+        wandb.log({'train_loss': train_loss, 'cumulative_loss': cumulative_loss * config.batch_size, 'time': round(toc - tic)})
+        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss * config.batch_size}, time for epoch {epoch}: {round(toc - tic)}')
     
     return model
 
@@ -178,7 +179,7 @@ def validate(config, model, loss_fn):
 
 
 def evaluate(config = None):
-    loss_fn = nn.L1Loss(reduction = 'sum')
+    loss_fn = nn.L1Loss(reduction = 'mean')
     model = train(config, loss_fn)
     torch.save(model, 'model.pt')
     validation_loss, r2 = validate(config, model, loss_fn)
