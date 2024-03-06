@@ -138,10 +138,10 @@ def validate(model, validation_loader, loss_fn):
 def evaluate(args, loss_fn):
     
     # get training loader
-    training_loader = DataLoader(dataset, batch_size = args.batch_size, shuffle = False)
+    training_loader = DataLoader(dataset, batch_size = args.batch_size, shuffle = True)
 
     # get validation loader
-    validation_loader = DataLoader(dataset_val, batch_size = args.batch_size, shuffle = False)
+    validation_loader = DataLoader(dataset_val, batch_size = args.batch_size, shuffle = True)
 
     # initialize model
     if args.activation_fn == 'ReLU':
