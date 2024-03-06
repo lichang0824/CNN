@@ -83,7 +83,7 @@ len(dataset_val)
 # In[ ]:
 
 
-def train_epoch(model, training_loader, optimizer, loss_fn):
+def train_epoch(model, training_loader, loss_fn, optimizer):
     cumulative_loss = 0.0
     for i, data in enumerate(training_loader):
         inputs, labels = data
@@ -109,47 +109,13 @@ def train_epoch(model, training_loader, optimizer, loss_fn):
         cumulative_loss += loss.item()
         
         wandb.log({'batch loss': loss.item()})
-    return cumulative_loss / len(training_loader), cumulative_loss
+    return cumulative_loss / len(training_loader)
 
 
 # In[ ]:
 
 
-def train(args, loss_fn):
-    
-    # get training loader
-    training_loader = DataLoader(dataset, batch_size = args.batch_size, shuffle = False)
-
-    # initialize model
-    if args.activation_fn == 'ReLU':
-        activation_fn = nn.ReLU()
-    
-    if args.activation_fn == 'Sigmoid':
-        activation_fn = nn.Sigmoid()
-    
-    model = ConvNetScalarLabel(kernel_size = args.kernel_size, activation_fn = activation_fn).to(device)
-    print(count_parameters(model))
-    
-    optimizer = torch.optim.SGD(model.parameters(), lr = args.learning_rate, momentum = 0.9)
-
-    for epoch in range(args.epochs_choice):
-        tic = time.time()
-        train_loss, cumulative_loss = train_epoch(model, training_loader, optimizer, loss_fn)
-        toc = time.time()
-        wandb.log({'train_loss': train_loss, 'cumulative_loss': cumulative_loss * args.batch_size, 'time': round(toc - tic)})
-        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss * args.batch_size}, time for epoch {epoch}: {round(toc - tic)}')
-    
-    return model
-
-
-# In[ ]:
-
-
-def validate(args, model, loss_fn):
-    
-    # get validation loader
-    validation_loader = DataLoader(dataset_val, batch_size = args.batch_size, shuffle = False)
-    
+def validate(model, validation_loader, loss_fn):
     validation_loss = 0.0
     y_true = []
     y_pred = []
@@ -169,7 +135,49 @@ def validate(args, model, loss_fn):
 # In[ ]:
 
 
-def evaluate(args = None):
+def evaluate(args, loss_fn):
+    
+    # get training loader
+    training_loader = DataLoader(dataset, batch_size = args.batch_size, shuffle = False)
+
+    # get validation loader
+    validation_loader = DataLoader(dataset_val, batch_size = args.batch_size, shuffle = False)
+
+    # initialize model
+    if args.activation_fn == 'ReLU':
+        activation_fn = nn.ReLU()
+    
+    if args.activation_fn == 'Sigmoid':
+        activation_fn = nn.Sigmoid()
+    
+    model = ConvNetScalarLabel(kernel_size = args.kernel_size, activation_fn = activation_fn).to(device)
+    print(count_parameters(model))
+    
+    optimizer = torch.optim.SGD(model.parameters(), lr = args.learning_rate, momentum = 0.9)
+
+    for epoch in range(args.epochs_choice):
+        wandb.log({'epoch': epoch})
+        # train
+        tic = time.time()
+        train_loss = train_epoch(model, training_loader, loss_fn, optimizer)
+        toc = time.time()
+        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic)})
+        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss * args.batch_size}, train time for epoch {epoch}: {round(toc - tic)}')
+
+        # validate
+        tic = time.time()
+        validation_loss, r2 = validate(model, validation_loader, loss_fn)
+        toc = time.time()
+        wandb.log({'validation_loss': validation_loss, 'r2': r2, 'validate_time': round(toc - tic)})
+        print(f'Validate loss for epoch {epoch}: {validation_loss}, r2 for epoch {epoch}: {r2}, validate time for epoch {epoch}: {round(toc - tic)}')
+    
+    return model
+
+
+# In[ ]:
+
+
+def run(args = None):
     training_set = train_parts[5:-5]
     name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
     print(name)
@@ -181,19 +189,18 @@ def evaluate(args = None):
         'activation_fn': args.activation_fn,
         'epochs_choice': args.epochs_choice,
         'learning_rate': args.learning_rate,
-        'batch_size': args.batch_size
+        'batch_size': args.batch_size,
+        'architecture': '3DCNN_256_stride1'
     }
     # initialize a wandb run
     wandb.init(name = name, project = 'PAPER', config = config)
     
     loss_fn = nn.L1Loss(reduction = 'mean')
-    model = train(args, loss_fn)
+    model = evaluate(args, loss_fn)
     torch.save(model, 'model.pt')
-    validation_loss, r2 = validate(args, model, loss_fn)
-    wandb.log({'validation_loss': validation_loss, 'r2': r2})
 
 
-# # Training settings
+# # Parsing parameters
 
 # In[ ]:
 
@@ -212,6 +219,6 @@ args = parser.parse_args()
 # In[ ]:
 
 
-evaluate(args = args)
+run(args = args)
 wandb.finish()
 
