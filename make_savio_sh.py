@@ -26,7 +26,7 @@ PREFACE = """#!/bin/bash
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=24:00:00
+#SBATCH --time=72:00:00
 #
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
