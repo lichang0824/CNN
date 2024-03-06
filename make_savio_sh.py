@@ -33,10 +33,10 @@ cd /global/home/users/changli824/CNN
 module load python
 source activate /global/scratch/users/changli824/conda/envs/3dcnn
 """
-for kernel_size in [3]:
+for kernel_size in [3, 5]:
     for activation_fn in ['ReLU', 'Sigmoid']:
         for epochs_choice in [5, 10, 15]:
-            for learning_rate in [1e-4, 1e-5]:
+            for learning_rate in [1e-4]:
                 for batch_size in [4]:
                     rand_id = f'CNN_{kernel_size}_{activation_fn}_{epochs_choice}_{learning_rate}_{batch_size}'
                     with open(f'savio_scripts/{rand_id}.sh', 'w') as w:
