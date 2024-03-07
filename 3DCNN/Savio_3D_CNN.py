@@ -162,7 +162,7 @@ def evaluate(args, loss_fn):
         train_loss = train_epoch(model, training_loader, loss_fn, optimizer)
         toc = time.time()
         wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic)})
-        print(f'Train loss for epoch {epoch}: {train_loss}, cumulative loss for epoch {epoch}: {cumulative_loss * args.batch_size}, train time for epoch {epoch}: {round(toc - tic)}')
+        print(f'Train loss for epoch {epoch}: {train_loss}, train time for epoch {epoch}: {round(toc - tic)}')
 
         # validate
         tic = time.time()
