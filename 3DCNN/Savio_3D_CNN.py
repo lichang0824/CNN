@@ -15,6 +15,7 @@ from Savio_Dataset import CustomDataset
 from Networks import ConvNetScalarLabel, count_parameters
 import time
 import argparse
+from tqdm import tqdm
 
 
 # In[ ]:
@@ -85,7 +86,7 @@ len(dataset_val)
 
 def train_epoch(model, training_loader, loss_fn, optimizer):
     cumulative_loss = 0.0
-    for i, data in enumerate(training_loader):
+    for i, data in enumerate(tqdm(training_loader)):
         inputs, labels = data
         inputs = inputs.to(device)
         labels = labels.to(device)
@@ -119,7 +120,7 @@ def validate(model, validation_loader, loss_fn):
     validation_loss = 0.0
     y_true = []
     y_pred = []
-    for i, data in enumerate(validation_loader):
+    for i, data in enumerate(tqdm(validation_loader)):
         inputs, labels = data
         inputs = inputs.to(device)
         labels = labels.to(device)
