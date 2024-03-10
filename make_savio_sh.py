@@ -41,4 +41,4 @@ for kernel_size in [3, 5]:
                     rand_id = f'CNN_{kernel_size}_{activation_fn}_{epochs_choice}_{learning_rate}_{batch_size}'
                     with open(f'savio_scripts/{rand_id}.sh', 'w') as w:
                         w.write(PREFACE % rand_id)
-                        w.write(f'./3DCNN/Savio_3D_CNN.py --kernel_size {kernel_size} --activation_fn {activation_fn} --epochs_choice {epochs_choice} --learning_rate {learning_rate} --batch_size {batch_size} --resolution 64')
+                        w.write(f'./3DCNN/Savio_3D_CNN.py --kernel_size {kernel_size} --activation_fn {activation_fn} --epochs_choice {epochs_choice} --learning_rate {learning_rate} --batch_size {batch_size}')

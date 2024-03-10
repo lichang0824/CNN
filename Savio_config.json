@@ -1,5 +1,6 @@
 {
 	"data_path": "/global/scratch/users/changli824",
 	"train_parts": "data/10000.json",
-	"val_parts": "data/benchmark.json"
+	"val_parts": "data/benchmark.json",
+	"resolution": 64
 }

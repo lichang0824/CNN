@@ -43,7 +43,6 @@ parser.add_argument('--activation_fn', type = str, required = True)
 parser.add_argument('--epochs_choice', type = int, required = True)
 parser.add_argument('--learning_rate', type = float, required = True)
 parser.add_argument('--batch_size', type = int, required = True)
-parser.add_argument('--resolution', type = int, required = True)
 args = parser.parse_args()
 
 
@@ -65,13 +64,14 @@ configs = json.load(open('Savio_config.json', 'r'))
 data_path = configs['data_path']
 train_parts = configs['train_parts']
 val_parts = configs['val_parts']
+resolution = configs['resolution']
 
 
 # In[ ]:
 
 
-dataset = CustomDataset(data_path = data_path, label_file_path = train_parts, transform = transform, resolution = args.resolution)
-dataset_val = CustomDataset(data_path = data_path, label_file_path = val_parts, transform = transform, resolution = args.resolution)
+dataset = CustomDataset(data_path = data_path, label_file_path = train_parts, transform = transform, resolution = resolution)
+dataset_val = CustomDataset(data_path = data_path, label_file_path = val_parts, transform = transform, resolution = resolution)
 
 
 # In[ ]:
@@ -91,7 +91,7 @@ len(dataset_val)
 # In[ ]:
 
 
-model_class = ConvNetScalarLabel256 if args.resolution == 256 else ConvNetScalarLabel64
+model_class = ConvNetScalarLabel256 if resolution == 256 else ConvNetScalarLabel64
 
 
 # # Define Training Logic
