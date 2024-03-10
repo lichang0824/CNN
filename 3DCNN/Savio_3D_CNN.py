@@ -12,7 +12,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score
 from Savio_Dataset import CustomDataset
-from Networks import ConvNetScalarLabel, count_parameters
+from Networks import ConvNetScalarLabel256, ConvNetScalarLabel64, count_parameters
 import time
 import argparse
 from tqdm import tqdm
@@ -32,12 +32,19 @@ import wandb
 wandb.login()
 
 
-# # Calculate number of parameters
+# # Parsing parameters
 
 # In[ ]:
 
 
-count_parameters(ConvNetScalarLabel())
+parser = argparse.ArgumentParser()
+parser.add_argument('--kernel_size', type = int, required = True)
+parser.add_argument('--activation_fn', type = str, required = True)
+parser.add_argument('--epochs_choice', type = int, required = True)
+parser.add_argument('--learning_rate', type = float, required = True)
+parser.add_argument('--batch_size', type = int, required = True)
+parser.add_argument('--resolution', type = int, required = True)
+args = parser.parse_args()
 
 
 # # Create dataset
@@ -63,8 +70,8 @@ val_parts = configs['val_parts']
 # In[ ]:
 
 
-dataset = CustomDataset(data_path = data_path, label_file_path = train_parts, transform = transform)
-dataset_val = CustomDataset(data_path = data_path, label_file_path = val_parts, transform = transform)
+dataset = CustomDataset(data_path = data_path, label_file_path = train_parts, transform = transform, resolution = args.resolution)
+dataset_val = CustomDataset(data_path = data_path, label_file_path = val_parts, transform = transform, resolution = args.resolution)
 
 
 # In[ ]:
@@ -77,6 +84,14 @@ len(dataset)
 
 
 len(dataset_val)
+
+
+# # Get Model Class
+
+# In[ ]:
+
+
+model_class = ConvNetScalarLabel256 if args.resolution == 256 else ConvNetScalarLabel64
 
 
 # # Define Training Logic
@@ -151,7 +166,7 @@ def evaluate(args, loss_fn):
     if args.activation_fn == 'Sigmoid':
         activation_fn = nn.Sigmoid()
     
-    model = ConvNetScalarLabel(kernel_size = args.kernel_size, activation_fn = activation_fn).to(device)
+    model = model_class(kernel_size = args.kernel_size, activation_fn = activation_fn).to(device)
     print(count_parameters(model))
     
     optimizer = torch.optim.SGD(model.parameters(), lr = args.learning_rate, momentum = 0.9)
@@ -191,7 +206,7 @@ def run(args = None):
         'epochs_choice': args.epochs_choice,
         'learning_rate': args.learning_rate,
         'batch_size': args.batch_size,
-        'architecture': '3DCNN_256_stride1'
+        'architecture': model_class.name
     }
     # initialize a wandb run
     wandb.init(name = name, project = 'PAPER', config = config)
@@ -199,20 +214,6 @@ def run(args = None):
     loss_fn = nn.L1Loss(reduction = 'mean')
     model = evaluate(args, loss_fn)
     torch.save(model, 'model.pt')
-
-
-# # Parsing parameters
-
-# In[ ]:
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--kernel_size', type = int, required = True)
-parser.add_argument('--activation_fn', type = str, required = True)
-parser.add_argument('--epochs_choice', type = int, required = True)
-parser.add_argument('--learning_rate', type = float, required = True)
-parser.add_argument('--batch_size', type = int, required = True)
-args = parser.parse_args()
 
 
 # # Start

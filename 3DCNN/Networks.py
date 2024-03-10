@@ -110,7 +110,8 @@ class ConvNet(nn.Module):
         x = self.conv64_8_1(x)
         return x
 
-class ConvNetScalarLabel(nn.Module):
+class ConvNetScalarLabel256(nn.Module):
+    name = '3DCNN_256_stride1'
     def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
         super().__init__()
 
@@ -136,6 +137,45 @@ class ConvNetScalarLabel(nn.Module):
 
         self.linear_1 = nn.Linear(256, 16)
         self.linear_2 = nn.Linear(16, 1)
+
+    def create_conv_set(self, in_channels, out_channels, kernel_size, activation_fn):
+        return nn.Sequential(
+            nn.Conv3d(in_channels = in_channels, out_channels = out_channels, kernel_size = kernel_size, padding = 'same', bias = False),
+            nn.BatchNorm3d(num_features = out_channels),
+            activation_fn
+        )
+
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        x = torch.squeeze(x)
+        x = self.linear_1(x)
+        x = self.linear_2(x)
+        return torch.squeeze(x)
+
+class ConvNetScalarLabel64(nn.Module):
+    name = '3DCNN_64_stride1'
+    def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
+        super().__init__()
+        self.layers = nn.ModuleList()
+        self.layers.append(self.create_conv_set(1, 2, kernel_size, activation_fn))
+        self.layers.append(nn.MaxPool3d(kernel_size = 2))
+        # 32 res here
+        self.layers.append(self.create_conv_set(2, 4, kernel_size, activation_fn))
+        self.layers.append(nn.MaxPool3d(kernel_size = 2))
+        # 16 res here
+        self.layers.append(self.create_conv_set(4, 8, kernel_size, activation_fn))
+        self.layers.append(nn.MaxPool3d(kernel_size = 2))
+        # 8 res here
+        self.layers.append(self.create_conv_set(8, 16, kernel_size, activation_fn))
+        self.layers.append(nn.MaxPool3d(kernel_size = 2))
+        # 4 res here
+        self.layers.append(self.create_conv_set(16, 32, kernel_size, activation_fn))
+        self.layers.append(nn.MaxPool3d(kernel_size = 4))
+        # 1 res here
+
+        self.linear_1 = nn.Linear(32, 8)
+        self.linear_2 = nn.Linear(8, 1)
 
     def create_conv_set(self, in_channels, out_channels, kernel_size, activation_fn):
         return nn.Sequential(

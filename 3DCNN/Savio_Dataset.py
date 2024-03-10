@@ -5,12 +5,14 @@ import multiprocess as multiprocessing
 import json
 from worker import load_sample_from_savio
 import Binvox
+from transform_name import get_binvox_name_256, get_binvox_name_64
 class CustomDataset(Dataset):
-    def __init__(self, data_path, label_file_path, transform = None, ram_limit = 1000):
+    def __init__(self, data_path, label_file_path, transform = None, ram_limit = 1000, resolution = 256):
         self.data_path = data_path
         self.label_file_path = label_file_path
         self.transform = transform
         self.ram_limit = ram_limit
+        self.resolution = resolution
         self.labels = self.load_labels()
     
     def load_labels(self):
@@ -54,7 +56,10 @@ class CustomDataset(Dataset):
         return sample, self.labels.iloc[idx]
         '''
         # Single core
-        binvox_name = self.labels.index[idx].replace('rotated_files', 'Binvox_files_default_res')[:-4] + '.binvox'
+        if self.resolution == 256:
+            binvox_name = get_binvox_name_256(self.labels.index[idx])
+        if self.resolution == 64:
+            binvox_name = get_binvox_name_64(self.labels.index[idx])
         sample_path = os.path.join(self.data_path, binvox_name)
         sample = Binvox.read_as_3d_array(open(sample_path, 'rb')).data
         if self.transform:
