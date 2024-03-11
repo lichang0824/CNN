@@ -100,6 +100,7 @@ model_class = ConvNetScalarLabel256 if resolution == 256 else ConvNetScalarLabel
 
 
 def train_epoch(model, training_loader, loss_fn, optimizer):
+    model.train()
     cumulative_loss = 0.0
     for i, data in enumerate(tqdm(training_loader)):
         inputs, labels = data
@@ -132,20 +133,22 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
 
 
 def validate(model, validation_loader, loss_fn):
+    model.eval()
     validation_loss = 0.0
     y_true = []
     y_pred = []
-    for i, data in enumerate(tqdm(validation_loader)):
-        inputs, labels = data
-        inputs = inputs.to(device)
-        labels = labels.to(device)
-        outputs = model(inputs)
-        loss = loss_fn(outputs, labels.float())
-        validation_loss += loss.item()
-
-        y_true.extend(labels.cpu().numpy().tolist())
-        y_pred.extend(outputs.cpu().detach().numpy().tolist())
-    return validation_loss / len(validation_loader), r2_score(y_true = y_true, y_pred = y_pred)
+    with torch.no_grad():
+        for i, data in enumerate(tqdm(validation_loader)):
+            inputs, labels = data
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            outputs = model(inputs)
+            loss = loss_fn(outputs, labels.float())
+            validation_loss += loss.item()
+    
+            y_true.extend(labels.cpu().numpy().tolist())
+            y_pred.extend(outputs.cpu().detach().numpy().tolist())
+        return validation_loss / len(validation_loader), r2_score(y_true = y_true, y_pred = y_pred)
 
 
 # In[ ]:
