@@ -102,12 +102,15 @@ model_class = ConvNetScalarLabel256 if resolution == 256 else ConvNetScalarLabel
 def train_epoch(model, training_loader, loss_fn, optimizer):
     model.train()
     cumulative_loss = 0.0
+    cumulative_time = 0.0
     for i, data in enumerate(tqdm(training_loader)):
         inputs, labels = data
         inputs = inputs.to(device)
         labels = labels.to(device)
         labels = torch.squeeze(labels)
 
+        tic = time.time()
+        
         # Zero the gradients
         optimizer.zero_grad()
 
@@ -122,11 +125,15 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
         # Adjust learning weights
         optimizer.step()
 
+        toc = time.time()
+
         # Increment by the mean loss of the batch
         cumulative_loss += loss.item()
+
+        cumulative_time += toc - tic
         
         wandb.log({'batch loss': loss.item()})
-    return cumulative_loss / len(training_loader)
+    return cumulative_loss / len(training_loader), cumulative_time / len(training_loader) * 1000
 
 
 # In[ ]:
@@ -148,7 +155,7 @@ def validate(model, validation_loader, loss_fn):
     
             y_true.extend(labels.cpu().numpy().tolist())
             y_pred.extend(outputs.cpu().detach().numpy().tolist())
-        return validation_loss / len(validation_loader), r2_score(y_true = y_true, y_pred = y_pred)
+    return validation_loss / len(validation_loader), r2_score(y_true = y_true, y_pred = y_pred)
 
 
 # In[ ]:
@@ -178,10 +185,10 @@ def evaluate(args, loss_fn):
         wandb.log({'epoch': epoch})
         # train
         tic = time.time()
-        train_loss = train_epoch(model, training_loader, loss_fn, optimizer)
+        train_loss, inference_time = train_epoch(model, training_loader, loss_fn, optimizer)
         toc = time.time()
-        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic)})
-        print(f'Train loss for epoch {epoch}: {train_loss}, train time for epoch {epoch}: {round(toc - tic)}')
+        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic), 'inference_time_batch_ms': inference_time})
+        print(f'Train loss for epoch {epoch}: {train_loss}, train time for epoch {epoch}: {round(toc - tic)}, average inference time for batch in milliseconds: {inference_time}')
 
         # validate
         tic = time.time()
@@ -198,7 +205,8 @@ def evaluate(args, loss_fn):
 
 def run(args = None):
     training_set = train_parts[5:-5]
-    name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
+    # name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
+    name = '3DCNN runtime testing'
     print(name)
 
     config = {
