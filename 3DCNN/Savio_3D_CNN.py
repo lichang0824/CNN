@@ -221,7 +221,8 @@ def run(args = None):
         'epochs_choice': args.epochs_choice,
         'learning_rate': args.learning_rate,
         'batch_size': args.batch_size,
-        'architecture': model_class.name
+        'architecture': model_class.name,
+        'num_parameters': count_parameters(model_class())
     }
     # initialize a wandb run
     wandb.init(name = name, project = 'PAPER', config = config)
