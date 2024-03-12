@@ -227,7 +227,7 @@ def run(args = None):
         'learning_rate': args.learning_rate,
         'batch_size': args.batch_size,
         'architecture': model_class.name,
-        'num_parameters': count_parameters(model_class())
+        'num_parameters': count_parameters(model_class(kernel_size = args.kernel_size))
     }
     # initialize a wandb run
     wandb.init(name = name, project = 'PAPER', config = config)
