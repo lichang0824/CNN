@@ -130,9 +130,9 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
         # Increment by the mean loss of the batch
         cumulative_loss += loss.item()
 
-        if i != 0:
+        if i > 10:
             cumulative_time += toc - tic
-            wandb.log({'inference_time_train': toc - tic})
+            wandb.log({'inference_time_train_ms': (toc - tic) * 1000})
         
         wandb.log({'batch loss': loss.item()})
     return cumulative_loss / len(training_loader), cumulative_time / (len(training_loader) - 1) * 1000
@@ -158,9 +158,9 @@ def validate(model, validation_loader, loss_fn):
             loss = loss_fn(outputs, labels.float())
             validation_loss += loss.item()
 
-            if i != 0:
+            if i > 10:
                 validation_time += toc - tic
-                wandb.log({'inference_time_validation': toc - tic})
+                wandb.log({'inference_time_validation_ms': (toc - tic) * 1000})
     
             y_true.extend(labels.cpu().numpy().tolist())
             y_pred.extend(outputs.cpu().detach().numpy().tolist())
