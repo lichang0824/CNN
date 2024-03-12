@@ -142,6 +142,7 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
 def validate(model, validation_loader, loss_fn):
     model.eval()
     validation_loss = 0.0
+    validation_time = 0.0
     y_true = []
     y_pred = []
     with torch.no_grad():
@@ -149,13 +150,16 @@ def validate(model, validation_loader, loss_fn):
             inputs, labels = data
             inputs = inputs.to(device)
             labels = labels.to(device)
+            tic = time.time()
             outputs = model(inputs)
+            toc = time.time()
             loss = loss_fn(outputs, labels.float())
             validation_loss += loss.item()
+            validation_time += toc - tic
     
             y_true.extend(labels.cpu().numpy().tolist())
             y_pred.extend(outputs.cpu().detach().numpy().tolist())
-    return validation_loss / len(validation_loader), r2_score(y_true = y_true, y_pred = y_pred)
+    return validation_loss / len(validation_loader), validation_time / len(validation_loader) * 1000, r2_score(y_true = y_true, y_pred = y_pred)
 
 
 # In[ ]:
@@ -187,15 +191,15 @@ def evaluate(args, loss_fn):
         tic = time.time()
         train_loss, inference_time = train_epoch(model, training_loader, loss_fn, optimizer)
         toc = time.time()
-        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic), 'inference_time_batch_ms': inference_time})
+        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic), 'train_time_batch_ms': inference_time})
         print(f'Train loss for epoch {epoch}: {train_loss}, train time for epoch {epoch}: {round(toc - tic)}, average inference time for batch in milliseconds: {inference_time}')
 
         # validate
         tic = time.time()
-        validation_loss, r2 = validate(model, validation_loader, loss_fn)
+        validation_loss, inference_time, r2 = validate(model, validation_loader, loss_fn)
         toc = time.time()
-        wandb.log({'validation_loss': validation_loss, 'r2': r2, 'validate_time': round(toc - tic)})
-        print(f'Validate loss for epoch {epoch}: {validation_loss}, r2 for epoch {epoch}: {r2}, validate time for epoch {epoch}: {round(toc - tic)}')
+        wandb.log({'validation_loss': validation_loss, 'r2': r2, 'validate_time': round(toc - tic), 'validate_time_batch_ms': inference_time})
+        print(f'Validate loss for epoch {epoch}: {validation_loss}, r2 for epoch {epoch}: {r2}, validate time for epoch {epoch}: {round(toc - tic)}, average inference time for batch in milliseconds: {inference_time}')
     
     return model
 
