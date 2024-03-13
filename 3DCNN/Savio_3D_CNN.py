@@ -103,7 +103,12 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
     model.train()
     cumulative_loss = 0.0
     cumulative_time = 0.0
+    cumulative_load_time = 0.0
+    load_start = time.time()
     for i, data in enumerate(tqdm(training_loader)):
+        load_end = time.time()
+        cumulative_load_time += load_end - load_start
+        wandb.log({'load_time_train_ms': (load_end - load_start) * 1000})
         inputs, labels = data
         inputs = inputs.to(device)
         labels = labels.to(device)
@@ -135,7 +140,8 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
             wandb.log({'inference_time_train_ms': (toc - tic) * 1000})
         
         wandb.log({'batch loss': loss.item()})
-    return cumulative_loss / len(training_loader), cumulative_time / (len(training_loader) - 10) * 1000
+        load_start = time.time()
+    return cumulative_loss / len(training_loader), cumulative_time / (len(training_loader) - 10) * 1000, cumulative_load_time / len(training_loader) * 1000
 
 
 # In[ ]:
@@ -194,9 +200,9 @@ def evaluate(args, loss_fn):
         wandb.log({'epoch': epoch})
         # train
         tic = time.time()
-        train_loss, inference_time = train_epoch(model, training_loader, loss_fn, optimizer)
+        train_loss, inference_time, load_time = train_epoch(model, training_loader, loss_fn, optimizer)
         toc = time.time()
-        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic), 'train_time_batch_ms': inference_time})
+        wandb.log({'train_loss': train_loss, 'train_time': round(toc - tic), 'train_time_batch_ms': inference_time, 'load_time_batch_ms': load_time})
         print(f'Train loss for epoch {epoch}: {train_loss}, train time for epoch {epoch}: {round(toc - tic)}, average inference time for batch in milliseconds: {inference_time}')
 
         # validate
