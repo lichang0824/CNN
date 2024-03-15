@@ -30,4 +30,4 @@
 cd /global/home/users/changli824/CNN
 module load python
 source activate /global/scratch/users/changli824/conda/envs/3dcnn
-python3 ./U-Net/test_gpu.py
+python3 ./test_gpu.py
