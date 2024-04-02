@@ -220,8 +220,8 @@ def evaluate(args, loss_fn):
 
 def run(args = None):
     training_set = train_parts[5:-5]
-    # name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
-    name = '3DCNN runtime testing'
+    name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
+    # name = '3DCNN runtime testing'
     print(name)
 
     config = {
@@ -232,7 +232,7 @@ def run(args = None):
         'epochs_choice': args.epochs_choice,
         'learning_rate': args.learning_rate,
         'batch_size': args.batch_size,
-        'architecture': model_class.name,
+        'architecture': model_class.arch,
         'num_parameters': count_parameters(model_class(kernel_size = args.kernel_size))
     }
     # initialize a wandb run

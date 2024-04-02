@@ -111,7 +111,7 @@ class ConvNet(nn.Module):
         return x
 
 class ConvNetScalarLabel256(nn.Module):
-    name = '3DCNN_256_stride1'
+    arch = '3DCNN_256_stride1'
     def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
         super().__init__()
 
@@ -154,7 +154,7 @@ class ConvNetScalarLabel256(nn.Module):
         return torch.squeeze(x)
 
 class ConvNetScalarLabel64(nn.Module):
-    name = '3DCNN_64_stride1'
+    arch = '3DCNN_64_stride1'
     def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
         super().__init__()
         self.layers = nn.ModuleList()
