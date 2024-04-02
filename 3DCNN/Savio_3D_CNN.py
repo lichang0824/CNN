@@ -65,6 +65,7 @@ data_path = configs['data_path']
 train_parts = configs['train_parts']
 val_parts = configs['val_parts']
 resolution = configs['resolution']
+wandb_path = configs['wandb_path']
 
 
 # In[ ]:
@@ -236,7 +237,7 @@ def run(args = None):
         'num_parameters': count_parameters(model_class(kernel_size = args.kernel_size))
     }
     # initialize a wandb run
-    wandb.init(name = name, project = 'PAPER', config = config)
+    wandb.init(name = name, project = 'PAPER', config = config, dir = wandb_path)
     
     loss_fn = nn.L1Loss(reduction = 'mean')
     model = evaluate(args, loss_fn)
