@@ -26,17 +26,16 @@ PREFACE = """#!/bin/bash
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=24:00:00
+#SBATCH --time=16:00:00
 #
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
 module load python
 source activate /global/scratch/users/changli824/conda/envs/3dcnn
 """
-'''
 for kernel_size in [3, 5]:
     for activation_fn in ['ReLU', 'Sigmoid']:
-        for epochs_choice in [5, 10, 15, 20]:
+        for epochs_choice in [5, 10, 15, 20, 25, 30]:
             for learning_rate in [1e-3, 1e-4, 1e-5]:
                 for batch_size in [4]:
                     rand_id = f'CNN_{kernel_size}_{activation_fn}_{epochs_choice}_{learning_rate}_{batch_size}'
@@ -44,7 +43,7 @@ for kernel_size in [3, 5]:
                         w.write(PREFACE % rand_id)
                         w.write(f'./3DCNN/Savio_3D_CNN.py --kernel_size {kernel_size} --activation_fn {activation_fn} --epochs_choice {epochs_choice} --learning_rate {learning_rate} --batch_size {batch_size}')
 '''
-for kernel_size in [5]:
+for kernel_size in [3]:
     for activation_fn in ['ReLU']:
         for epochs_choice in [1]:
             for learning_rate in [1e-4]:
@@ -53,3 +52,4 @@ for kernel_size in [5]:
                     with open(f'savio_scripts/{rand_id}.sh', 'w') as w:
                         w.write(PREFACE % rand_id)
                         w.write(f'./3DCNN/Savio_3D_CNN.py --kernel_size {kernel_size} --activation_fn {activation_fn} --epochs_choice {epochs_choice} --learning_rate {learning_rate} --batch_size {batch_size}')
+'''
