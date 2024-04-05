@@ -35,17 +35,23 @@ This project uses `wandb` to log hyperparameter settings, training and validatio
 
 ## How to run
 
-1. Create conda environment with the environment file using the `-f` flag: `conda env create -f environment.yml`. Specify environment path with the `-p` flag if necessary.
-2. Check paths and settings in [Savio_config.json](./Savio_config.json). 
+0. Create conda environment with the environment file using the `-f` flag: `conda env create -f environment.yml`. Specify environment path with the `-p` flag if necessary.
+1. Check paths and settings in [Savio_config.json](./Savio_config.json). 
     1. `data_path` refers to the root folder of training data. 
     2. `train_parts` and `val_parts` refer to  the json files containing the filenames and corresponding unprintability score labels for that file. 
     3. `resolution` denotes the resolution of training data used. Data files in `data_path` must match this resolution. Pay attention to functions in [transform_name.py](./3DCNN/transform_name.py) as they need to transform the raw file names in the json label files into file paths and Binvox file names in the data folder. 
     4. `wandb_path` refers to the path for wandb logging. Consider storing this somewhere else because it can take up significant amount of storage after many runs.
-3. Edit [make_savio_sh.py](./make_savio_sh.py) for hyperparameter sweeping. This python script combines sbatch scripts defined in `Preface` with the actual sbatch command that's dynamically generated according to hyperparameter settings, and writes a file containing the finished sbatch script for each hyperparameter combination. Change hyperparameters to sweep in the loops if needed. 
-4. Run the script to generate sbatch scripts with `python3 make_savio_sh.py`.
-5. Run the generated sbatch scripts with `python3 run_savio.py`.
+2. Edit [make_savio_sh.py](./make_savio_sh.py) for hyperparameter sweeping. 
+    1. This python script combines sbatch scripts defined in `Preface` with the actual sbatch command that's dynamically generated according to hyperparameter settings, and writes a file containing the finished sbatch script for each hyperparameter combination. 
+    2. Change hyperparameters to sweep in the loops if needed. 
+    3. Verify the wall clock limit in line 29 is reasonable according to resolution and epoch settings.
+    4. Change the repository path in line 32 if needed. 
+    5. Change the conda environment path in line 34 if needed.
+3. Run the script to generate sbatch scripts with `python3 make_savio_sh.py`.
+4. Run the generated sbatch scripts with `python3 run_savio.py`.
 
 ## TODOs
 
 Add reference to data source
+
 Add reference to Ethan's code for Savio scripting
