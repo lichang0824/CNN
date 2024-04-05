@@ -5,7 +5,7 @@ This project aims to predict FEM (Finite Element Analysis) results from 3D CAD p
 
 ## Code structure
 
-Main CNN architectures and training logics are in the 3DCNN folder, and the scripts to run them are in the root folder. 
+Main CNN architectures and training logics are in the `3DCNN` folder, and the scripts to run them are in the root folder. 
 
 Specifically:
 
