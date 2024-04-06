@@ -201,8 +201,8 @@ class MLPBaseline64(nn.Module):
 
     def forward(self, x):
         x = torch.squeeze(x)
-        x = self.linear1(x)
-        x = self.linear2(x)
+        x = activation_fn(self.linear1(x))
+        x = activation_fn(self.linear2(x))
         return torch.squeeze(x)
 
 # Code below is from https://stackoverflow.com/questions/49201236/check-the-total-number-of-parameters-in-a-pytorch-model
