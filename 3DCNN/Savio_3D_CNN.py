@@ -66,6 +66,7 @@ train_parts = configs['train_parts']
 val_parts = configs['val_parts']
 resolution = configs['resolution']
 wandb_path = configs['wandb_path']
+baseline = configs['baseline']
 
 
 # In[ ]:
@@ -92,12 +93,14 @@ len(dataset_val)
 # In[ ]:
 
 
-if resolution == 256:
-    model_class = ConvNetScalarLabel256
-if resolution == 64:
-    model_class = ConvNetScalarLabel64
-if resolution == 0:
-    model_class = MLPBaseline64
+if baseline = 0:
+    if resolution == 256:
+        model_class = ConvNetScalarLabel256
+    if resolution == 64:
+        model_class = ConvNetScalarLabel64
+if baseline == 1:
+    if resolution == 64:
+        model_class = MLPBaseline64
 
 
 # # Define Training Logic
