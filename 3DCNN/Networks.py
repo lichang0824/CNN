@@ -196,13 +196,14 @@ class MLPBaseline64(nn.Module):
     arch = 'MLPBaseline64'
     def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
         super().__init__()
-        self.linear1 = nn.Linear(64 ** 3, 64)
-        self.linear2 = nn.Linear(64, 1)
+        self.linear1 = nn.Linear(64 ** 3, 8)
+        self.linear2 = nn.Linear(8, 1)
+        self.activation_fn = activation_fn
 
     def forward(self, x):
         x = torch.squeeze(x)
-        x = activation_fn(self.linear1(x))
-        x = activation_fn(self.linear2(x))
+        x = self.activation_fn(self.linear1(x))
+        x = self.activation_fn(self.linear2(x))
         return torch.squeeze(x)
 
 # Code below is from https://stackoverflow.com/questions/49201236/check-the-total-number-of-parameters-in-a-pytorch-model
