@@ -12,7 +12,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.metrics import r2_score
 from Savio_Dataset import CustomDataset
-from Networks import ConvNetScalarLabel256, ConvNetScalarLabel64, count_parameters
+from Networks import ConvNetScalarLabel256, ConvNetScalarLabel64, MLPBaseline64, count_parameters
 import time
 import argparse
 from tqdm import tqdm
@@ -92,7 +92,12 @@ len(dataset_val)
 # In[ ]:
 
 
-model_class = ConvNetScalarLabel256 if resolution == 256 else ConvNetScalarLabel64
+if resolution == 256:
+    model_class = ConvNetScalarLabel256
+if resolution == 64:
+    model_class = ConvNetScalarLabel64
+if resolution == 0:
+    model_class = MLPBaseline64
 
 
 # # Define Training Logic

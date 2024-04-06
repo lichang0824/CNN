@@ -192,6 +192,21 @@ class ConvNetScalarLabel64(nn.Module):
         x = self.linear_2(x)
         return torch.squeeze(x)
 
+class MLPBaseline64(nn.Module):
+    arch = 'MLPBaseline64'
+    def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
+        super().__init__()
+        self.linear1 = nn.Linear(64 ** 3, 64 ** 2)
+        self.linear2 = nn.Linear(64 ** 2, 64)
+        self.linear3 = nn.Linear(64, 1)
+
+    def forward(self, x):
+        x = torch.squeeze(x)
+        x = self.linear1(x)
+        x = self.linear2(x)
+        x = self.linear3(x)
+        return torch.squeeze(x)
+
 # Code below is from https://stackoverflow.com/questions/49201236/check-the-total-number-of-parameters-in-a-pytorch-model
 def count_parameters(model):
     table = PrettyTable(["Modules", "Parameters"])
