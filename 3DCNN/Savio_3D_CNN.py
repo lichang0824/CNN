@@ -93,7 +93,7 @@ len(dataset_val)
 # In[ ]:
 
 
-if baseline = 0:
+if baseline == 0:
     if resolution == 256:
         model_class = ConvNetScalarLabel256
     if resolution == 64:
