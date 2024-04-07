@@ -201,7 +201,7 @@ class MLPBaseline64(nn.Module):
         self.activation_fn = activation_fn
 
     def forward(self, x):
-        x = torch.flatten(x)
+        x = torch.reshape(x, (-1, 64 ** 3))
         x = self.activation_fn(self.linear1(x))
         x = self.activation_fn(self.linear2(x))
         return torch.squeeze(x)
