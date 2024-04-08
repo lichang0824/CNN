@@ -1,10 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Preparation
-
-# In[ ]:
-
+# Preparation
 
 import numpy as np
 import torch
@@ -17,25 +11,13 @@ import time
 import argparse
 from tqdm import tqdm
 
-
-# In[ ]:
-
-
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
-
-
-# In[ ]:
-
 
 import wandb
 wandb.login()
 
-
-# # Parsing parameters
-
-# In[ ]:
-
+# Parsing parameters
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--kernel_size', type = int, required = True)
@@ -45,19 +27,11 @@ parser.add_argument('--learning_rate', type = float, required = True)
 parser.add_argument('--batch_size', type = int, required = True)
 args = parser.parse_args()
 
-
-# # Create dataset
-
-# In[ ]:
-
+# Create dataset
 
 def transform(voxel):
     # return torch.unsqueeze(torch.tensor(condense_voxel_array(voxel, 64), dtype = torch.float32), 0)
     return torch.unsqueeze(torch.tensor(voxel, dtype = torch.float32), 0)
-
-
-# In[ ]:
-
 
 import json
 configs = json.load(open('Savio_config.json', 'r'))
@@ -68,30 +42,14 @@ resolution = configs['resolution']
 wandb_path = configs['wandb_path']
 baseline = configs['baseline']
 
-
-# In[ ]:
-
-
 dataset = CustomDataset(data_path = data_path, label_file_path = train_parts, transform = transform, resolution = resolution)
 dataset_val = CustomDataset(data_path = data_path, label_file_path = val_parts, transform = transform, resolution = resolution)
 
-
-# In[ ]:
-
-
 len(dataset)
-
-
-# In[ ]:
-
 
 len(dataset_val)
 
-
-# # Get Model Class
-
-# In[ ]:
-
+# Get Model Class
 
 if baseline == 0:
     if resolution == 256:
@@ -102,11 +60,7 @@ if baseline == 1:
     if resolution == 64:
         model_class = MLPBaseline64
 
-
-# # Define Training Logic
-
-# In[ ]:
-
+# Define Training Logic
 
 def train_epoch(model, training_loader, loss_fn, optimizer):
     model.train()
@@ -152,10 +106,6 @@ def train_epoch(model, training_loader, loss_fn, optimizer):
         load_start = time.time()
     return cumulative_loss / len(training_loader), cumulative_time / (len(training_loader) - 10) * 1000, cumulative_load_time / len(training_loader) * 1000
 
-
-# In[ ]:
-
-
 def validate(model, validation_loader, loss_fn):
     model.eval()
     validation_loss = 0.0
@@ -180,10 +130,6 @@ def validate(model, validation_loader, loss_fn):
             y_true.extend(labels.cpu().numpy().tolist())
             y_pred.extend(outputs.cpu().detach().numpy().tolist())
     return validation_loss / len(validation_loader), validation_time / (len(validation_loader) - 10) * 1000, r2_score(y_true = y_true, y_pred = y_pred)
-
-
-# In[ ]:
-
 
 def evaluate(args, loss_fn):
     
@@ -223,10 +169,6 @@ def evaluate(args, loss_fn):
     
     return model
 
-
-# In[ ]:
-
-
 def run(args = None):
     training_set = train_parts[5:-5]
     name = f'3DCNN_{training_set}_{args.kernel_size}_{args.activation_fn}_{args.epochs_choice}_{args.learning_rate}_{args.batch_size}'
@@ -251,11 +193,7 @@ def run(args = None):
     model = evaluate(args, loss_fn)
     torch.save(model, 'model.pt')
 
-
 # # Start
-
-# In[ ]:
-
 
 run(args = args)
 wandb.finish()
