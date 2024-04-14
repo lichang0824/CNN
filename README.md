@@ -11,7 +11,7 @@ Specifically:
 
 3DCNN definitions: [Networks.py](./3DCNN/Networks.py)
 
-Jupyter notebook and python file for training logic: [Savio_3D_CNN.ipynb](./3DCNN/Savio_3D_CNN.ipynb) and [Savio_3D_CNN.py](./3DCNN/Savio_3D_CNN.py). Jupyter Notebook was used to simplify code writing.
+Training logic: [Savio_3D_CNN.py](./3DCNN/Savio_3D_CNN.py). 
 
 Custom dataset for the Binvox files: [Savio_Dataset.py](./3DCNN/Savio_Dataset.py)
 
