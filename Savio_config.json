@@ -1,8 +1,8 @@
 {
-	"data_path": "/global/scratch/users/changli824",
-	"train_parts": "data/200000.json",
+	"data_path": "/global/scratch/users/ethantqiu",
+	"train_parts": "data/1000.json",
 	"val_parts": "data/benchmark.json",
-	"resolution": 64,
+	"resolution": 256,
 	"wandb_path": "/global/scratch/users/changli824",
 	"baseline": 0
 }

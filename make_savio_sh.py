@@ -26,14 +26,14 @@ PREFACE = """#!/bin/bash
 #SBATCH --gres=gpu:GTX2080TI:1
 #
 # Wall clock limit:
-#SBATCH --time=16:00:00
+#SBATCH --time=08:00:00
 #
 ## Command(s) to run (example):
 cd /global/home/users/changli824/CNN
 module load python
 source activate /global/scratch/users/changli824/conda/envs/3dcnn
 """
-for epochs_choice in [30, 25, 20, 15, 10, 5]:
+for epochs_choice in [15, 10, 5]:
     for kernel_size in [3, 5]:
         for activation_fn in ['ReLU', 'Sigmoid']:
             for learning_rate in [1e-3, 1e-4, 1e-5]:

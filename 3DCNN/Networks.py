@@ -111,7 +111,7 @@ class ConvNet(nn.Module):
         return x
 
 class ConvNetScalarLabel256(nn.Module):
-    arch = '3DCNN_256_stride1'
+    arch = '3DCNN_256_stride1_new'
     def __init__(self, kernel_size = 3, activation_fn = nn.ReLU()):
         super().__init__()
 
