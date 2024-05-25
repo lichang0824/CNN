@@ -1,5 +1,5 @@
 # 3DCNN for UC Berkeley Capstone Project
-This is the repository for capstone project #110 (Machine Learning-Based 3D Printing Part Redesign Tool) of the 2023-2024 Master of Engineering program at UC Berkeley. 
+This is the repository for capstone project #110 (Optimized Machine-Learning 3D Print Quality Predictor) of the 2023-2024 Master of Engineering program at UC Berkeley. 
 
 This project aims to predict FEM (Finite Element Analysis) results from 3D CAD parts with CNNs using their geometries, specifically CAD parts that are to be 3D printed using the Laser Powder Bed Fusion process. Normally, FEM takes hours or even days to run, and we hope to replace this process with CNN by using it to directly predict the results with good accuracy. Currently, due to the lack of training data, we have made the compromise to predict a single number called unprintability score that simply describes the probability of failure of 3D printing. 
 
@@ -50,8 +50,10 @@ This project uses `wandb` to log hyperparameter settings, training and validatio
 3. Run the script to generate sbatch scripts with `python3 make_savio_sh.py`.
 4. Run the generated sbatch scripts with `python3 run_savio.py`.
 
-## TODOs
+## References
 
-Add reference to data source
+1. Automation architecture is from another student in professor McMains' lab at UC Berkeley: [GitHub Repo](https://github.com/TianshuangQiu/AdditiveParts)
 
-Add reference to Ethan's code for Savio scripting
+2. Unprintability scores are from Schranz. Schranz, C. (2016). Tweaker-auto rotation module for FDM 3D printing. Salzburg Research Salzburg, Austria. [link](https://www.researchgate.net/profile/Christoph-Schranz/publication/311765131_Tweaker_-_Auto_Rotation_Module_for_FDM_3D_Printing/links/585953eb08aeffd7c4fd0743/Tweaker-Auto-Rotation-Module-for-FDM-3D-Printing.pdf)
+
+3. 3D parts are from the FabWave Dataset. Bharadwaj, A., Xu, Y., Angrish, A., Chen, Y., & Starly, B. (2019, June). Development of a pilot manufacturing cyberinfrastructure with an information rich mechanical CAD 3D model repository. In International Manufacturing Science and Engineering Conference (Vol. 58745, p. V001T02A035). American Society of Mechanical Engineers. [link](https://asmedigitalcollection.asme.org/MSEC/proceedings/MSEC2019/58745/V001T02A035/1070704?casa_token=-peOyarun2cAAAAA:dxMeubtT_yfZAJVUT-wmj31KI6qgmGyW2SAMlvDzcPqoQOByEfdHeAYhABN_ygdzjssj4Fw)
